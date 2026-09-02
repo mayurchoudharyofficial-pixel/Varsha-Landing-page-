@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local design dumps and unused type tests
+/All assets /
+/fonts/sohne-font-family-*
+/.cursor
