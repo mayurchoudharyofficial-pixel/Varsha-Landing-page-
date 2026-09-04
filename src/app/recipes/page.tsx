@@ -1,58 +1,60 @@
+"use client";
+
 import Image from "next/image";
-import { FadeIn, Stagger, StaggerItem } from "@/components/fade-in";
-import { MotionCard } from "@/components/motion-pill";
+import { useState } from "react";
+import { MobileNav } from "@/components/mobile-nav";
+import { RecipeOverlay } from "@/components/recipe-overlay";
+import { RecipeSheet, splitRecipeName } from "@/components/recipe-sheet";
 import { content } from "@/data/content";
 
 export default function RecipesPage() {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const openRecipe = content.recipes.items.find((recipe) => recipe.id === openId) ?? null;
+
   if (!content.recipes.visible) return null;
 
   return (
-    <main className="min-h-dvh bg-cream px-5 py-16 pb-28 sm:px-8 lg:px-12">
-      <div className="mx-auto max-w-6xl">
-        <FadeIn>
-          <h1 className="font-display text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            {content.recipes.heading}
-          </h1>
-          <p className="mt-3 max-w-[40rem] text-base leading-7 text-ink-muted">
-            {content.recipes.subtext}
-          </p>
-        </FadeIn>
-        <Stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {content.recipes.items.map((recipe) => (
-            <StaggerItem key={recipe.id} className="h-full">
-              <MotionCard className="h-full">
-                <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
-                  <div className="relative aspect-square w-full shrink-0">
-                    <Image
-                      src={recipe.image}
-                      alt={recipe.name}
-                      fill
-                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-1 flex-col px-5 py-5">
-                    <p className="text-xs font-medium tracking-[0.14em] text-leaf uppercase">
-                      {recipe.meal}
-                    </p>
-                    <h2 className="mt-2 font-display text-lg font-bold tracking-tight text-gray-900">
-                      {recipe.name}
-                    </h2>
-                    <p className="mt-1 text-sm text-ink-muted">
-                      {recipe.protein} · {recipe.time}
-                    </p>
-                    <ol className="mt-4 list-decimal space-y-1.5 pl-4 text-sm leading-6 text-ink-muted">
-                      {recipe.steps.map((step) => (
-                        <li key={step}>{step}</li>
-                      ))}
-                    </ol>
-                  </div>
-                </article>
-              </MotionCard>
-            </StaggerItem>
-          ))}
-        </Stagger>
+    <main className="relative bg-paper lg:bg-white">
+      <img
+        src={content.recipes.pagePlate}
+        alt=""
+        className="pointer-events-none absolute top-[-186px] left-[-197px] z-0 hidden h-[721px] w-[711px] object-contain lg:block"
+      />
+      <div className="relative z-10">
+        <MobileNav />
+        <div className="flex flex-col items-center gap-5 px-6 pt-8 pb-16 lg:gap-10 lg:px-[max(4.5rem,calc((100%-76.5rem)/2))] lg:pt-14 lg:pb-20">
+          <div className="flex w-full flex-col items-center gap-3 px-4 text-center text-ink lg:gap-5 lg:px-0">
+            <h1 className="font-display text-[28px] leading-none lg:text-[50px] lg:tracking-[-0.5px]">{content.recipes.heading}</h1>
+            <p className="max-w-[360px] text-[16px] leading-[1.3] font-semibold lg:max-w-[653px] lg:text-[20px] lg:leading-[1.4]">
+              {content.recipes.subtext}
+            </p>
+          </div>
+          <div className="flex w-full flex-col gap-4 lg:grid lg:max-w-[1292px] lg:grid-cols-3 lg:gap-10">
+            {content.recipes.items.map((recipe) => {
+              const { title } = splitRecipeName(recipe.name);
+              return (
+                <button
+                  key={recipe.id}
+                  type="button"
+                  onClick={() => setOpenId(recipe.id)}
+                  className="pressable relative isolate aspect-[342/265] w-full overflow-hidden rounded-[12px] bg-[#e7e7e7] lg:aspect-auto lg:h-[404px]"
+                >
+                  <Image
+                    src={recipe.image}
+                    alt={recipe.name}
+                    fill
+                    quality={100}
+                    sizes="(min-width: 1024px) 404px, 100vw"
+                    className="z-0 object-cover"
+                  />
+                  <RecipeOverlay title={title} protein={recipe.protein} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
+      <RecipeSheet recipe={openRecipe} onClose={() => setOpenId(null)} />
     </main>
   );
 }

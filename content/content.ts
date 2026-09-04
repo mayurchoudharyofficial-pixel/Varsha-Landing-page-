@@ -14,10 +14,12 @@ export const content = {
     nav: [
       { label: "Home", href: "/" },
       { label: "Results", href: "#results" },
-      { label: "DietPlans", href: "#diet-plans" },
+      { label: "Diet Plans", href: "#diet-plans" },
       { label: "Recipes", href: "#recipes" },
-      { label: "FAQ", href: "#faq" },
+      { label: "FAQ’s", href: "#faq" },
     ],
+    menuIcon: "/images/icons/menu.svg",
+    closeIcon: "/images/icons/close.svg",
   },
 
   whatsapp: {
@@ -36,6 +38,9 @@ export const content = {
       "Specialized clinical care for PCOD, diabetes, thyroid health, and pregnancy. Work directly with a dietitian who listens first.",
     image: "/images/hero/varsha-photo.jpeg",
     imageAlt: "Dt. Varsha Ladkat",
+    decorative1440: "/images/hero/decorative-1440.png",
+    decorative1920: "/images/hero/decorative-1920.png",
+    decorativeAlt: "Indian dishes",
     dishes: [
       { src: "/images/hero/dish-1.png", alt: "Indian dish" },
       { src: "/images/hero/dish-2.png", alt: "Indian dish" },
@@ -192,7 +197,7 @@ export const content = {
   // in the same pattern as the Figma caption for Shivam, until Varsha confirms.
   beforeAfter: {
     visible: true,
-    heading: "Real\nResults\nnaturally.",
+    heading: "Real Results naturally.",
     subtext:
       "No crash diets. No supplements. Just everyday home-cooked food and expert clinical guidance.",
     beforeLabel: "Before",
@@ -201,6 +206,7 @@ export const content = {
     nextLabel: "Next result",
     prevIcon: "/images/icons/chevron-prev.svg",
     nextIcon: "/images/icons/chevron-next.svg",
+    chevronCircle: "/images/icons/chevron-circle.svg",
     clients: [
       {
         before: "/images/results/man-06-before.jpeg",
@@ -268,25 +274,37 @@ export const content = {
         title: "Say Hello",
         body: "Drop a WhatsApp message to start the conversation. No complicated forms, no hassle.",
         number: "/images/how-it-works/01.svg",
-        numberWidth: 184,
+        numberWidth: 150,
+        numberHeight: 121,
+        numberWidth1920: 208,
+        numberHeight1920: 167,
       },
       {
         title: "First Consultation",
         body: "We sit down to deeply understand your lifestyle, medical history, and exact goals.",
         number: "/images/how-it-works/02.svg",
-        numberWidth: 226,
+        numberWidth: 184,
+        numberHeight: 121,
+        numberWidth1920: 242,
+        numberHeight1920: 158,
       },
       {
-        title: "Get Your Custom Plan",
+        title: "Get Custom Plan",
         body: "Receive a clinical diet chart built around your routine and the foods you actually enjoy.",
         number: "/images/how-it-works/03.svg",
-        numberWidth: 228,
+        numberWidth: 186,
+        numberHeight: 121,
+        numberWidth1920: 244,
+        numberHeight1920: 158,
       },
       {
         title: "Stay on Track",
         body: "Get weekly check-ins and direct WhatsApp support to keep you moving forward.",
         number: "/images/how-it-works/04.svg",
-        numberWidth: 239,
+        numberWidth: 195,
+        numberHeight: 121,
+        numberWidth1920: 253,
+        numberHeight1920: 157,
       },
     ],
   },
@@ -298,7 +316,7 @@ export const content = {
     subtext:
       "Healthy doesn't mean boring. A sneak peek at the delicious, high-protein meals you will actually enjoy eating.",
     cta: {
-      label: "See All Recipes",
+      label: "View all recipes",
       href: "/recipes",
       icon: "/images/icons/link-next.svg",
     },
@@ -316,7 +334,16 @@ export const content = {
     heading: "Eat what you love",
     subtext:
       "Healthy doesn't mean boring. A sneak peek at the delicious, high-protein meals you will actually enjoy eating.",
+    pagePlate: "/images/recipes/page-plate.png",
+    pagePlateAlt: "Indian dish",
     document: "/images/recipes/high-protein-indian-recipes.pdf",
+    ingredientsHeading: "Ingredients",
+    methodHeading: "How to make it",
+    closeLabel: "Close",
+    clockIcon: "/images/icons/clock.svg",
+    proteinIcon: "/images/icons/protein.svg",
+    checkIcon: "/images/icons/check.svg",
+    closeIcon: "/images/icons/sheet-cross.svg",
     items: [
       {
         id: "paneer-bhurji",
@@ -326,6 +353,13 @@ export const content = {
         time: "15 mins",
         // PLACEHOLDER — LOW RISK
         meal: "Breakfast",
+        ingredients: [
+          "200g Paneer, crumbled",
+          "1 Onion & 1 Tomato, finely chopped",
+          "1 Green Chilli, chopped",
+          "1/2 tsp Cumin seeds, Turmeric, and Garam Masala",
+          "1 tbsp Oil or Ghee",
+        ],
         steps: [
           "Heat oil in a pan and add cumin seeds. Let them splutter.",
           "Add chopped onions and green chilli, sauté until golden.",
@@ -341,6 +375,12 @@ export const content = {
         time: "15 mins (plus soaking)",
         // PLACEHOLDER — LOW RISK
         meal: "Breakfast",
+        ingredients: [
+          "1 cup Yellow Moong Dal (soaked for 2-3 hours)",
+          "1 inch Ginger & 1 Green Chilli",
+          "Pinch of Asafoetida (Hing) and Salt to taste",
+          "Oil or Ghee for cooking",
+        ],
         steps: [
           "Blend the soaked dal, ginger, and chilli into a smooth batter. Add a little water as needed.",
           "Add salt and hing to the batter.",
@@ -356,6 +396,13 @@ export const content = {
         time: "20 mins",
         // PLACEHOLDER — LOW RISK
         meal: "Lunch/Dinner",
+        ingredients: [
+          "1 cup Soya Chunks (Nutrela / Meal Maker)",
+          "1 Capsicum & 1 Onion, sliced",
+          "1 tsp Ginger-Garlic paste",
+          "1/2 tsp Cumin powder, Coriander powder, and Garam Masala",
+          "1 tbsp Oil",
+        ],
         steps: [
           "Boil the soya chunks in salted water for 5 minutes. Drain, rinse with cold water, and squeeze out all excess water completely.",
           "Heat oil, add ginger-garlic paste and sauté.",
@@ -371,6 +418,13 @@ export const content = {
         time: "10 mins",
         // PLACEHOLDER — LOW RISK
         meal: "Breakfast",
+        ingredients: [
+          "3 whole eggs (or 1 whole egg + 3 egg whites)",
+          "1 small Onion & 1 small Tomato, finely chopped",
+          "1 Green Chilli, chopped",
+          "Pinch of Turmeric, Salt, and Red Chilli Powder",
+          "1 tsp Butter or Oil",
+        ],
         steps: [
           "Crack the eggs into a bowl, add a pinch of salt, and whisk well.",
           "Heat butter/oil in a pan. Sauté onions and green chilli until soft.",
@@ -385,6 +439,13 @@ export const content = {
         protein: "~15g per bowl",
         time: "10 mins (No cook)",
         meal: "Snack",
+        ingredients: [
+          "1 cup Roasted Chana (Bhuna Chana without skin)",
+          "1 Cucumber & 1 Tomato, chopped",
+          "1/2 Onion, finely chopped",
+          "1 tbsp Lemon juice",
+          "Chaat Masala and Salt to taste",
+        ],
         steps: [
           "In a large mixing bowl, combine the roasted chana, chopped cucumber, tomato, and onion.",
           "Sprinkle chaat masala and salt according to your preference.",
@@ -445,6 +506,8 @@ export const content = {
     subtext:
       "Hear from people who transformed their health without giving up the food they love.",
     video: "/images/reviews/client-video.mp4",
+    videos: [{ src: "/images/reviews/client-video.mp4" }],
+    closeLabel: "Close",
     sourceLabel: "Google",
     googleIcon: "/images/icons/google.svg",
     avatarColor: "#4f74f2",
@@ -549,56 +612,67 @@ export const content = {
     plans: [
       {
         name: "Thyroid Diet Plan",
+        chip: "Thyroid",
         prices: { oneMonth: 3000, threeMonths: 8500, sixMonths: 15000 },
         image: "/images/diet-plans/Thyroid Diet Plan.jpeg",
       },
       {
         name: "Diabetes Management Plan",
+        chip: "Diabetes",
         prices: { oneMonth: 3000, threeMonths: 8500, sixMonths: 15000 },
         image: "/images/diet-plans/Diabetes Management Plan.jpeg",
       },
       {
         name: "PCOD Diet Plan",
+        chip: "PCOD",
         prices: { oneMonth: 3500, threeMonths: 9500, sixMonths: 17000 },
         image: "/images/diet-plans/PCOD Diet Plan.jpeg",
       },
       {
         name: "GDM (Gestational Diabetes Mellitus) Diet Plan",
+        chip: "GDM",
         prices: { oneMonth: 3500, threeMonths: 9500, sixMonths: 17000 },
         image: "/images/diet-plans/GDM (Gestational Diabetes Mellitus) Diet Plan.jpeg",
       },
       {
         name: "Weight Gain Diet Plan",
+        chip: "Weight Gain",
         prices: { oneMonth: 3500, threeMonths: 9500, sixMonths: 17000 },
         image: "/images/diet-plans/Weight Gain Diet Plan.jpeg",
       },
       {
         name: "Weight Loss Diet Plan",
+        chip: "Weight Loss",
         prices: { oneMonth: 3500, threeMonths: 9500, sixMonths: 17000 },
         image: "/images/diet-plans/Weight Loss Diet Plan.jpeg",
       },
       {
         name: "Muscle Gain Diet Plan",
+        chip: "Muscle Gain",
         prices: { oneMonth: 3500, threeMonths: 9500, sixMonths: 17000 },
         image: "/images/diet-plans/Muscle Gain Diet Plan.jpeg",
       },
       {
         name: "IBS (Irritable Bowel Syndrome) Diet Plan",
+        chip: "IBS",
         prices: { oneMonth: 3500, threeMonths: 9500, sixMonths: 17000 },
         image: "/images/diet-plans/IBS (Irritable Bowel Syndrome) Diet Plan.jpeg",
       },
       {
         name: "Child Nutrition Plan",
+        chip: "Child",
         prices: { oneMonth: 3000, threeMonths: 8500, sixMonths: 15000 },
         image: "/images/diet-plans/Child Nutrition Plan.jpeg",
       },
       {
         name: "Pregnancy Diet Plan (Pre/Post)",
+        chip: "Pregnancy",
         prices: { oneMonth: 3500, threeMonths: 9500, sixMonths: 17000 },
         image: "/images/diet-plans/Pregnancy Diet Plan (Pre:Post).jpeg",
       },
       {
         name: "Detox Diet Plan",
+        chip: "Detox",
         prices: { oneMonth: 2500, threeMonths: 7500, sixMonths: 13000 },
         image: "/images/diet-plans/Detox Diet Plan.jpeg",
       },
@@ -644,7 +718,7 @@ export const content = {
   // Clinic & location — address, hours, map, and contact from the notes and pricing sheet. No clinic photos were provided.
   location: {
     visible: true,
-    heading: "Clinic & location",
+    heading: "Clinic and Location",
     clinicName: "Varsha Diet Clinic",
     addressLines: [
       "Shop no 02, Plot. 64, Mahesh Society",

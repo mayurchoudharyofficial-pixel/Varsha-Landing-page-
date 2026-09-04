@@ -1,67 +1,63 @@
-import Image from "next/image";
-import { HeroNav } from "@/components/hero-nav";
+"use client";
+
+import { useMemo, useState } from "react";
+import { MobileNav } from "@/components/mobile-nav";
 import { PlanCatalog } from "@/components/plan-catalog";
-import { content, whatsappHref } from "@/data/content";
-import { MotionPill } from "@/components/motion-pill";
-import { WhatsAppIcon } from "@/components/whatsapp-icon";
+import { content } from "@/data/content";
 
 export default function PackagesPage() {
+  const [active, setActive] = useState("all");
+  const chips = useMemo(
+    () => [
+      { id: "all", label: content.labels.all },
+      ...content.pricing.plans.map((plan) => ({ id: plan.name, label: plan.chip })),
+    ],
+    [],
+  );
+
   if (!content.pricing.visible) return null;
 
-  const plates = content.pricing.pagePlates;
+  const plans =
+    active === "all"
+      ? content.pricing.plans
+      : content.pricing.plans.filter((plan) => plan.name === active);
 
   return (
-    <main className="diet-plans-page relative bg-white">
-      <HeroNav sticky={false} />
-
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-0 hidden h-[560px] overflow-hidden lg:block">
-        {plates[0] ? (
-          <Image
-            src={plates[0].src}
-            alt=""
-            width={840}
-            height={808}
-            quality={100}
-            className="absolute top-[-72px] left-[-110px] h-[420px] w-[436px] max-w-none object-contain mix-blend-multiply"
-          />
-        ) : null}
-        {plates[1] ? (
-          <Image
-            src={plates[1].src}
-            alt=""
-            width={440}
-            height={424}
-            quality={100}
-            className="absolute top-[210px] left-[-28px] h-[210px] w-[218px] max-w-none object-contain mix-blend-multiply"
-          />
-        ) : null}
-      </div>
-
-      <div className="relative z-10 mx-auto flex w-full max-w-[1178px] flex-col items-center px-5 pt-10 pb-16 sm:px-[30px] sm:pt-[44px] sm:pb-24">
-        <header className="flex w-full flex-col items-center gap-[31px] text-center text-ink">
-          <div className="flex flex-col items-center gap-6">
-            <h1 className="font-display text-[32px] leading-none sm:text-[48px] lg:text-[80px] lg:whitespace-nowrap">
-              {content.pricing.heading}
-            </h1>
-            <p className="max-w-[720px] font-mono text-[20px] leading-[1.3] font-normal">
+    <main className="relative bg-plans pt-0">
+      <img
+        src={content.recipes.pagePlate}
+        alt=""
+        className="pointer-events-none absolute top-[-146px] left-[-197px] z-0 hidden h-[721px] w-[711px] object-contain lg:block"
+      />
+      <div className="relative z-10">
+        <MobileNav />
+        <div className="flex flex-col items-center gap-8 px-0 pt-8 pb-12 lg:gap-10 lg:pt-14 lg:pb-20">
+          <div className="shell flex w-full flex-col items-center gap-4 text-center text-ink">
+            <h1 className="font-display text-[28px] leading-none lg:text-[50px]">{content.pricing.heading}</h1>
+            <p className="max-w-[360px] text-[16px] leading-[1.3] font-semibold lg:max-w-[640px] lg:text-[20px] lg:leading-[1.4] lg:text-[#316148]">
               {content.pricing.subtext}
             </p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {chips.map((chip) => {
+                const selected = chip.id === active;
+                return (
+                  <button
+                    key={chip.id}
+                    type="button"
+                    onClick={() => setActive(chip.id)}
+                    className={`pressable h-[38px] rounded-[8px] border px-4 text-[14px] leading-[1.3] font-semibold lg:h-11 lg:text-[16px] ${
+                      selected
+                        ? "border-[#adcf9d] bg-[#e8f1e3] text-ink"
+                        : "border-[#ebe8c4] bg-white text-ink"
+                    }`}
+                  >
+                    {chip.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          {content.whatsapp.visible ? (
-            <MotionPill
-              href={whatsappHref()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-[58px] items-center justify-center gap-2.5 rounded-[2px] bg-cta px-6 text-[20px] leading-[1.3] font-semibold text-paper"
-            >
-              <WhatsAppIcon className="size-6" />
-              {content.hero.primaryCta.label}
-            </MotionPill>
-          ) : null}
-        </header>
-
-        <div className="mt-16 w-full sm:mt-24">
-          <PlanCatalog plans={content.pricing.plans} layout="grid" />
+          <PlanCatalog plans={plans} layout="grid" />
         </div>
       </div>
     </main>

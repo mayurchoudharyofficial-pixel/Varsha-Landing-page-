@@ -44,7 +44,7 @@ export function Stagger({
   className?: string;
   as?: "ul" | "ol" | "div";
 }) {
-  const ref = useRef<HTMLElement | null>(null);
+  const ref = useRef(null);
   const reduce = useReducedMotion();
   const inView = useInView(ref, viewport);
   const MotionTag = motion[Tag];

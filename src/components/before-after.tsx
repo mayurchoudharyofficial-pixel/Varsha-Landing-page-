@@ -1,11 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MISSING, content } from "@/data/content";
 
-const imageEase = [0.23, 1, 0.32, 1] as const;
+const CARD_GAP = 32;
+
+function cardStep(node: HTMLDivElement) {
+  const first = node.querySelector("article");
+  if (!first) return 512;
+  return first.getBoundingClientRect().width + CARD_GAP;
+}
 
 export function BeforeAfter() {
   if (!content.beforeAfter.visible) return null;
@@ -14,133 +19,239 @@ export function BeforeAfter() {
 
 function ResultsCarousel() {
   const section = content.beforeAfter;
-  const reduce = useReducedMotion();
-  const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
   const clients = section.clients;
-  const client = clients[index];
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const drag = useRef({ startX: 0, moved: false });
+  const [index, setIndex] = useState(0);
+  const [fullscreen, setFullscreen] = useState<number | null>(null);
 
-  const go = useCallback(
-    (delta: number) => {
-      if (clients.length < 2) return;
-      setDirection(delta);
-      setIndex((current) => (current + delta + clients.length) % clients.length);
+  const goTo = useCallback(
+    (next: number) => {
+      if (clients.length === 0) return;
+      const clamped = ((next % clients.length) + clients.length) % clients.length;
+      setIndex(clamped);
+      const node = scrollerRef.current;
+      if (node) {
+        node.scrollTo({ left: clamped * cardStep(node), behavior: "smooth" });
+      }
     },
     [clients.length],
   );
 
-  if (!client) return null;
+  useEffect(() => {
+    const node = scrollerRef.current;
+    if (!node) return;
+    const onScroll = () => {
+      const next = Math.round(node.scrollLeft / cardStep(node));
+      setIndex(Math.max(0, Math.min(clients.length - 1, next)));
+    };
+    node.addEventListener("scroll", onScroll, { passive: true });
+    return () => node.removeEventListener("scroll", onScroll);
+  }, [clients.length]);
 
-  const caption = client.caption !== MISSING ? client.caption : null;
-  const name = client.name !== MISSING ? client.name : null;
-  const beforeAlt = name
-    ? `${section.beforeLabel} — ${name}`
-    : section.beforeLabel;
-  const afterAlt = name ? `${section.afterLabel} — ${name}` : section.afterLabel;
+  useEffect(() => {
+    if (fullscreen === null) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setFullscreen(null);
+    };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [fullscreen]);
+
+  const openClient = clients[fullscreen ?? index];
+  const desktopClient = clients[index];
+  const desktopCaption =
+    desktopClient?.caption !== MISSING ? desktopClient.caption : null;
 
   return (
-    <section
-      id="results"
-      className="results-section relative z-0 -mt-[72px] bg-results px-[20px] sm:-mt-[86px] lg:px-[30px]"
-      style={{
-        paddingTop: "var(--results-pt)",
-        paddingBottom: "var(--results-pb)",
-      }}
-    >
-      <div
-        className="flex w-full flex-col items-start lg:flex-row lg:items-start"
-        style={{ gap: "var(--results-col-gap)" }}
-      >
-        <div className="flex w-full shrink-0 flex-col gap-6 text-ink lg:w-[424px]">
-          <h2 className="font-display text-[2.5rem] leading-none whitespace-pre-wrap sm:text-6xl lg:text-[80px]">
-            {section.heading}
-          </h2>
-          <p className="font-mono text-[0.9375rem] leading-[1.45] font-normal sm:text-lg lg:text-[20px] lg:leading-[1.3]">
+    <section id="results" className="scroll-mt-[78px] bg-paper py-8 lg:scroll-mt-[88px] lg:px-16 lg:py-10 w1920:px-20 w1920:py-20">
+      <div className="flex flex-col items-center gap-8 lg:gap-10">
+        <div className="shell flex w-full flex-col items-center gap-2 text-center text-ink lg:gap-4 lg:px-0">
+          <h2 className="font-display w-full text-[28px] leading-none lg:text-[44px]">{section.heading}</h2>
+          <p className="max-w-[302px] text-[16px] leading-[1.3] font-semibold lg:max-w-[620px] lg:text-[20px] lg:leading-[1.4] lg:text-[#316148]">
             {section.subtext}
           </p>
         </div>
 
-        <div
-          className="flex w-full items-center lg:w-auto lg:shrink-0"
-          style={{ gap: "var(--results-img-gap)" }}
-        >
-          <CarouselButton
-            label={section.prevLabel}
-            icon={section.prevIcon}
-            onClick={() => go(-1)}
-          />
-
+        <div className="relative w-full lg:hidden">
           <div
-            className="flex min-w-0 flex-1 flex-col items-start lg:flex-none lg:w-[calc(var(--results-img-w)*2+var(--results-img-gap))]"
-            style={{
-              gap: "var(--results-caption-gap)",
-            }}
+            ref={scrollerRef}
+            className="flex snap-x snap-mandatory gap-8 overflow-x-auto scroll-pl-4 pl-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            <div
-              className="relative w-full overflow-hidden lg:h-[var(--results-img-h)]"
-              onPointerDown={(event) => {
-                if (event.button !== 0) return;
-                const startX = event.clientX;
-                const target = event.currentTarget;
-                const onUp = (up: PointerEvent) => {
-                  const dx = up.clientX - startX;
-                  if (dx > 48) go(-1);
-                  else if (dx < -48) go(1);
-                  window.removeEventListener("pointerup", onUp);
-                  if (target.hasPointerCapture(event.pointerId)) {
-                    target.releasePointerCapture(event.pointerId);
-                  }
-                };
-                target.setPointerCapture(event.pointerId);
-                window.addEventListener("pointerup", onUp);
-              }}
-            >
-              <AnimatePresence mode="popLayout" initial={false} custom={direction}>
-                <motion.div
-                  key={client.before}
-                  className="flex"
-                  style={{ gap: "var(--results-img-gap)" }}
-                  custom={direction}
-                  initial={
-                    reduce ? { opacity: 1 } : { opacity: 0, x: direction * 24 }
-                  }
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={
-                    reduce
-                      ? { opacity: 0 }
-                      : { opacity: 0, x: direction * -24 }
-                  }
-                  transition={{ duration: 0.38, ease: imageEase }}
-                >
-                  <ResultPhoto
-                    src={client.before}
-                    alt={beforeAlt}
-                    label={section.beforeLabel}
-                  />
-                  <ResultPhoto
-                    src={client.after}
-                    alt={afterAlt}
-                    label={section.afterLabel}
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </div>
+            {clients.map((client, clientIndex) => {
+              const caption = client.caption !== MISSING ? client.caption : null;
+              const name = client.name !== MISSING ? client.name : null;
+              const beforeAlt = name ? `${section.beforeLabel} — ${name}` : section.beforeLabel;
+              const afterAlt = name ? `${section.afterLabel} — ${name}` : section.afterLabel;
 
-            <p
-              className="font-mono text-[0.9375rem] leading-[1.3] text-ink sm:text-lg lg:text-[20px]"
-              aria-live="polite"
-            >
-              {caption}
-            </p>
+              return (
+                <article key={`${client.before}-${clientIndex}`} className="w-[480px] shrink-0 snap-start">
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    aria-label={name ? `${section.beforeLabel} and ${section.afterLabel} — ${name}` : section.beforeLabel}
+                    className="relative h-[325px] w-[480px] cursor-pointer overflow-hidden rounded-[12px]"
+                    onPointerDown={(event) => {
+                      if (event.button !== 0) return;
+                      drag.current = { startX: event.clientX, moved: false };
+                    }}
+                    onPointerMove={(event) => {
+                      if (Math.abs(event.clientX - drag.current.startX) > 8) {
+                        drag.current.moved = true;
+                      }
+                    }}
+                    onClick={() => {
+                      if (drag.current.moved) return;
+                      setFullscreen(clientIndex);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        setFullscreen(clientIndex);
+                      }
+                    }}
+                  >
+                    <div className="flex h-full w-full">
+                      <ResultPhoto src={client.before} alt={beforeAlt} label={section.beforeLabel} />
+                      <ResultPhoto src={client.after} alt={afterAlt} label={section.afterLabel} />
+                    </div>
+                  </div>
+                  {caption ? (
+                    <p className="mt-3 max-w-[358px] rounded-[16px] bg-plans px-4 py-2 text-[16px] leading-[1.3] font-semibold text-ink">
+                      {caption}
+                    </p>
+                  ) : null}
+                </article>
+              );
+            })}
+            <div className="w-4 shrink-0" aria-hidden />
           </div>
 
-          <CarouselButton
-            label={section.nextLabel}
-            icon={section.nextIcon}
-            onClick={() => go(1)}
-          />
+          {clients.length > 1 ? (
+            <>
+              <button
+                type="button"
+                aria-label={section.prevLabel}
+                onClick={() => goTo(index - 1)}
+                className="pressable absolute top-[150px] left-3 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 shadow-[0_2px_10px_rgba(0,0,0,0.12)] backdrop-blur-sm"
+              >
+                <img src={section.prevIcon} alt="" width={28} height={28} className="size-7" />
+              </button>
+              <button
+                type="button"
+                aria-label={section.nextLabel}
+                onClick={() => goTo(index + 1)}
+                className="pressable absolute top-[150px] right-2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 shadow-[0_2px_10px_rgba(0,0,0,0.12)] backdrop-blur-sm"
+              >
+                <img src={section.nextIcon} alt="" width={28} height={28} className="size-7" />
+              </button>
+            </>
+          ) : null}
         </div>
+
+        {desktopClient ? (
+          <div className="hidden w-full flex-col items-center gap-[31px] lg:flex">
+            <div className="flex items-center justify-center gap-5">
+              {clients.length > 1 ? (
+                <button
+                  type="button"
+                  aria-label={section.prevLabel}
+                  onClick={() => goTo(index - 1)}
+                  className="pressable grid size-[46px] shrink-0 place-items-center"
+                >
+                  <img src={section.chevronCircle} alt="" width={46} height={46} className="size-[46px] rotate-180" />
+                </button>
+              ) : null}
+              <div
+                role="button"
+                tabIndex={0}
+                aria-label={
+                  desktopClient.name !== MISSING
+                    ? `${section.beforeLabel} and ${section.afterLabel} — ${desktopClient.name}`
+                    : section.beforeLabel
+                }
+                className="flex cursor-pointer gap-4 rounded-[32px] border-2 border-[#efeccc] bg-[#fcfbef] p-3.5 w1920:gap-5 w1920:p-5"
+                onClick={() => setFullscreen(index)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setFullscreen(index);
+                  }
+                }}
+              >
+                <ResultPhoto
+                  src={desktopClient.before}
+                  alt={
+                    desktopClient.name !== MISSING
+                      ? `${section.beforeLabel} — ${desktopClient.name}`
+                      : section.beforeLabel
+                  }
+                  label={section.beforeLabel}
+                  framed
+                  sizes="441px"
+                />
+                <ResultPhoto
+                  src={desktopClient.after}
+                  alt={
+                    desktopClient.name !== MISSING
+                      ? `${section.afterLabel} — ${desktopClient.name}`
+                      : section.afterLabel
+                  }
+                  label={section.afterLabel}
+                  framed
+                  sizes="441px"
+                />
+              </div>
+              {clients.length > 1 ? (
+                <button
+                  type="button"
+                  aria-label={section.nextLabel}
+                  onClick={() => goTo(index + 1)}
+                  className="pressable grid size-[46px] shrink-0 place-items-center"
+                >
+                  <img src={section.chevronCircle} alt="" width={46} height={46} className="size-[46px]" />
+                </button>
+              ) : null}
+            </div>
+            {desktopCaption ? (
+              <p className="text-center text-[18px] leading-[1.4] font-bold text-ink">{desktopCaption}</p>
+            ) : null}
+          </div>
+        ) : null}
       </div>
+
+      {fullscreen !== null && openClient ? (
+        <div className="fixed inset-0 z-[80] flex flex-col bg-black/92">
+          <button
+            type="button"
+            aria-label={content.testimonials.closeLabel}
+            onClick={() => setFullscreen(null)}
+            className="pressable absolute top-4 right-4 z-10 grid size-10 place-items-center rounded-full bg-white/90"
+          >
+            <img src={content.site.closeIcon} alt="" width={22} height={22} className="size-[22px]" />
+          </button>
+          <div className="flex min-h-0 flex-1 items-center justify-center px-2">
+            <div className="flex max-h-full w-full max-w-[960px] overflow-hidden rounded-[12px]">
+              <ResultPhoto
+                src={openClient.before}
+                alt={openClient.name !== MISSING ? `${section.beforeLabel} — ${openClient.name}` : section.beforeLabel}
+                label={section.beforeLabel}
+                sizes="50vw"
+              />
+              <ResultPhoto
+                src={openClient.after}
+                alt={openClient.name !== MISSING ? `${section.afterLabel} — ${openClient.name}` : section.afterLabel}
+                label={section.afterLabel}
+                sizes="50vw"
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -149,50 +260,33 @@ function ResultPhoto({
   src,
   alt,
   label,
+  sizes = "240px",
+  framed = false,
 }: {
   src: string;
   alt: string;
   label: string;
+  sizes?: string;
+  framed?: boolean;
 }) {
   return (
     <div
-      className="relative aspect-[342/464] min-w-0 flex-1 overflow-hidden lg:h-[var(--results-img-h)] lg:w-[var(--results-img-w)] lg:flex-none lg:aspect-auto"
-      style={{
-        borderRadius: "var(--results-radius)",
-      }}
+      className={
+        framed
+          ? "relative h-[320px] w-[236px] overflow-hidden rounded-[20px] w1440:h-[380px] w1440:w-[280px] w1920:h-[599px] w1920:w-[441px]"
+          : "relative min-h-0 min-w-0 flex-1 overflow-hidden"
+      }
     >
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        sizes="(max-width: 1023px) 50vw, (max-width: 1919px) 342px, 435px"
-        className="pointer-events-none object-cover object-top"
-      />
-      <span className="absolute top-2 left-2 rounded-full bg-paper px-3 py-1 font-sans text-[16px] leading-[1.2] text-black min-[1920px]:top-[10px] min-[1920px]:left-[10px] min-[1920px]:px-[15px] min-[1920px]:py-[5px] min-[1920px]:text-[20px]">
+      <Image src={src} alt={alt} fill quality={100} sizes={sizes} className="pointer-events-none object-cover object-top" />
+      <span
+        className={`absolute bg-paper px-3 py-1 text-[12px] leading-[1.2] font-semibold text-black ${
+          framed
+            ? "top-2 left-2 rounded-full text-[16px] leading-[1.3]"
+            : "top-2 left-2 rounded-[6px] px-2.5"
+        }`}
+      >
         {label}
       </span>
     </div>
-  );
-}
-
-function CarouselButton({
-  label,
-  icon,
-  onClick,
-}: {
-  label: string;
-  icon: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      className="relative shrink-0 cursor-pointer transition-transform duration-100 ease-out hover:scale-[1.04] active:scale-[0.97]"
-      style={{ width: "var(--results-chevron)", height: "var(--results-chevron)" }}
-    >
-      <img src={icon} alt="" className="size-full" />
-    </button>
   );
 }

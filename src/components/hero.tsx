@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { MISSING, content, whatsappHref } from "@/data/content";
-import { MotionPill } from "@/components/motion-pill";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
 
 export function Hero() {
@@ -11,63 +10,65 @@ export function Hero() {
   const showSubtext = hero.subtext !== MISSING;
 
   return (
-    <section className="hero-section relative overflow-hidden bg-paper lg:h-dvh">
-      <div className="relative h-[16.5rem] w-full sm:h-[20rem] lg:absolute lg:inset-y-0 lg:right-0 lg:z-10 lg:h-auto lg:w-1/2">
+    <section className="relative flex min-h-dvh flex-col overflow-hidden bg-paper pb-8 lg:h-dvh lg:min-h-0 lg:pb-0">
+      <div className="relative z-10 min-h-[220px] w-full flex-[1_1_0] lg:absolute lg:inset-y-0 lg:min-h-0 desk:right-0 desk:w-1/2 w1440:left-[713px] w1440:w-[745px] w1920:right-0 w1920:left-auto w1920:w-1/2">
         <Image
           src={hero.image}
           alt={hero.imageAlt}
           fill
           priority
-          sizes="(max-width: 1023px) 100vw, 50vw"
-          className="object-cover object-[center_18%]"
+          quality={100}
+          sizes="(min-width: 1600px) 50vw, (min-width: 1440px) 745px, (min-width: 1024px) 50vw, 100vw"
+          className="object-cover object-[center_18%] lg:object-[center_22%]"
         />
       </div>
 
-      <div className="relative px-5 pt-6 pb-10 sm:px-8 lg:px-[30px] lg:pt-[30px] lg:pb-0">
-        <div className="relative z-20 flex max-w-[595px] flex-col gap-6 lg:gap-[31px]">
-          <div className="flex flex-col gap-4 lg:gap-6">
-            {showHeadline ? (
-              <h1 className="font-display text-[2rem] leading-[1.06] text-ink sm:text-[3.25rem] sm:leading-[1.04] lg:text-[80px] lg:leading-none">
-                {hero.headline}
-              </h1>
-            ) : null}
+      <div className="relative z-20 flex w-full shrink-0 flex-col items-center gap-5 px-4 pt-6 lg:absolute lg:top-0 lg:left-0 lg:w-[577px] lg:items-start lg:gap-6 lg:px-0 desk:top-[48px] desk:left-[40px] w1440:top-[48px] w1440:left-[68px] w1920:top-[56px] w1920:left-[192px]">
+        <div className="flex w-full flex-col items-center gap-2 text-center text-ink lg:items-start lg:gap-6 lg:text-left">
+          {showHeadline ? (
+            <h1 className="font-display text-[32px] leading-none tracking-[-0.32px] lg:text-[64px] lg:tracking-[-0.64px] w1920:text-[66px] w1920:tracking-[-0.66px]">
+              {hero.headline}
+            </h1>
+          ) : null}
+          {showSubtext ? (
+            <p className="max-w-[430px] text-[18px] leading-[1.3] font-semibold text-ink lg:max-w-none lg:text-[26px] lg:leading-[1.3] lg:font-bold lg:tracking-[-0.2px] lg:text-[#316148]">
+              {hero.subtext}
+            </p>
+          ) : null}
+        </div>
 
-            {showSubtext ? (
-              <p className="font-mono text-[0.9375rem] leading-[1.45] font-normal text-ink sm:text-lg lg:text-[20px] lg:leading-[1.3]">
-                {hero.subtext}
-              </p>
-            ) : null}
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:gap-5">
-            {content.whatsapp.visible ? (
-              <MotionPill
-                href={whatsappHref()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex h-[52px] items-center justify-center gap-2.5 rounded-[2px] bg-cta px-6 font-sans text-[15px] font-semibold text-paper lg:h-[58px] lg:text-xl"
-              >
-                <WhatsAppIcon className="size-6" />
-                {hero.primaryCta.label}
-              </MotionPill>
-            ) : null}
-
-            <MotionPill
-              href={hero.secondaryCta.href}
-              className="inline-flex h-[52px] items-center justify-center gap-2.5 rounded-[2px] border-2 border-ink bg-paper px-6 font-sans text-[15px] font-semibold text-ink lg:h-[58px] lg:text-xl"
+        <div className="flex w-full flex-col items-center gap-4 lg:w-full lg:flex-row lg:items-stretch lg:justify-start lg:gap-5">
+          {content.whatsapp.visible ? (
+            <a
+              href={whatsappHref()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pressable inline-flex h-12 w-full items-center justify-center gap-2.5 rounded-[8px] bg-cta px-6 text-[16px] leading-[1.3] font-bold text-white lg:h-[58px] lg:w-[266px] lg:px-6 lg:py-3.5 lg:text-[22px] lg:leading-[1.2] lg:tracking-[-0.3px]"
             >
-              <img
-                src={hero.secondaryCta.icon}
-                alt=""
-                width={24}
-                height={24}
-                className="size-6"
-              />
-              {hero.secondaryCta.label}
-            </MotionPill>
-          </div>
+              <WhatsAppIcon className="size-6 text-white" />
+              {hero.primaryCta.label}
+            </a>
+          ) : null}
+          <a
+            href={hero.secondaryCta.href}
+            className="pressable inline-flex h-12 w-full items-center justify-center gap-2.5 rounded-[8px] border-2 border-ink bg-paper px-6 text-[16px] leading-[1.3] font-bold text-ink lg:h-[58px] lg:w-[271px] lg:px-6 lg:py-3.5 lg:text-[22px] lg:leading-[1.2] lg:tracking-[-0.3px]"
+          >
+            <img src={hero.secondaryCta.icon} alt="" width={24} height={24} className="size-6" />
+            {hero.secondaryCta.label}
+          </a>
         </div>
       </div>
+
+      <img
+        src={hero.decorative1440}
+        alt=""
+        className="pointer-events-none absolute bottom-0 left-[-8px] z-0 hidden h-auto w-[720px] max-w-none desk:block w1440:block"
+      />
+      <img
+        src={hero.decorative1920}
+        alt=""
+        className="pointer-events-none absolute bottom-0 left-[-32px] z-0 hidden h-auto w-[1000px] max-w-none w1920:block"
+      />
     </section>
   );
 }

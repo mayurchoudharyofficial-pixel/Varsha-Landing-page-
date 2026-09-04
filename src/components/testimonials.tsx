@@ -4,86 +4,40 @@ import { content } from "@/data/content";
 export function Testimonials() {
   if (!content.testimonials.visible) return null;
 
-  const items = content.testimonials.items.slice(
-    0,
-    content.testimonials.homepagePreviewCount,
-  );
+  const items = content.testimonials.items.slice(0, content.testimonials.homepagePreviewCount);
+  const loop = [...items, ...items];
 
   return (
-    <>
-      <section
-        id="stories"
-        className="grid min-h-[420px] bg-[#2c4836] lg:grid-cols-2 lg:h-[725px]"
-      >
-        <div className="flex flex-col justify-start gap-6 px-5 py-10 text-[#fefef1] sm:px-[30px] sm:py-[30px] lg:max-w-[452px]">
-          <h2 className="font-display text-[2.5rem] leading-none sm:text-6xl lg:text-[80px]">
-            {content.testimonials.heading}
+    <section id="reviews" className="overflow-x-clip bg-reviews py-8 lg:py-20">
+      <div className="flex flex-col items-center gap-6 lg:gap-10">
+        <div className="shell flex w-full flex-col items-center gap-2 text-center text-ink">
+          <h2 className="font-display text-[28px] leading-none lg:text-[50px]">
+            {content.testimonials.reviewsHeading}
           </h2>
-          <p className="font-mono text-[20px] leading-[1.3] font-normal">
+          <p className="max-w-[280px] text-[16px] leading-[1.3] font-semibold lg:max-w-[640px] lg:text-[20px] lg:leading-[1.4]">
             {content.testimonials.subtext}
           </p>
         </div>
-        <div className="relative min-h-[280px] bg-[#e1e1e1] lg:min-h-0">
-          <video
-            className="absolute inset-0 size-full object-cover"
-            src={content.testimonials.video}
-            controls
-            playsInline
-            preload="metadata"
-            aria-label={content.testimonials.heading}
-          />
-        </div>
-      </section>
 
-      <section
-        id="reviews"
-        className="overflow-hidden bg-[#fcf9b9] px-5 py-16 sm:px-[30px] sm:py-[100px]"
-      >
-        <div className="flex flex-col items-start gap-10 lg:flex-row lg:gap-[17px]">
-          <div className="flex w-full shrink-0 flex-col items-start gap-6 text-[#2c4836] lg:w-[381px]">
-            <h2 className="font-display text-[2.5rem] leading-none sm:text-6xl lg:text-[80px]">
-              {content.testimonials.reviewsHeading}
-            </h2>
-            <p className="font-mono text-[20px] leading-[1.3] font-normal">
-              {content.testimonials.subtext}
-            </p>
-            <a
-              href={content.testimonials.cta.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-end gap-1"
-            >
-              <span className="font-mono text-[24px] leading-[1.3] font-bold tracking-[-0.48px] whitespace-pre-line">
-                {content.testimonials.cta.label}
-              </span>
-              <Image
-                src={content.testimonials.cta.arrow}
-                alt=""
-                width={54}
-                height={27}
-                className="mb-1 h-[27px] w-[54px]"
-              />
-            </a>
-          </div>
-
-          <div className="-mx-5 flex w-full gap-[50px] overflow-x-auto px-5 pb-2 [scrollbar-width:none] lg:mx-0 lg:px-0 [&::-webkit-scrollbar]:hidden">
-            {items.map((item) => (
+        <div className="w-full overflow-hidden py-5">
+          <div className="marquee-track-slow flex w-max gap-4 px-4 lg:gap-6">
+            {loop.map((item, index) => (
               <article
-                key={item.name}
-                className="flex h-[411px] w-[317px] shrink-0 flex-col gap-3 rounded-[12px] bg-white p-5 shadow-[0_4px_4px_rgba(0,0,0,0.15)]"
+                key={`${item.name}-${index}`}
+                className="flex h-[350px] w-[214px] shrink-0 flex-col gap-3 overflow-hidden rounded-[12px] bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)] lg:h-[380px] lg:w-[318px] lg:rounded-[20px] lg:p-5"
               >
-                <div className="flex items-start gap-2">
+                <div className="flex items-start gap-2 lg:gap-3">
                   <span
-                    className="grid size-[51px] shrink-0 place-items-center rounded-full text-[20px] leading-[1.4] font-medium tracking-[-0.2px] text-white"
+                    className="grid size-[42px] shrink-0 place-items-center rounded-full text-[20px] leading-[1.2] font-extrabold tracking-[-0.3px] text-white lg:size-12 lg:text-[22px]"
                     style={{ backgroundColor: content.testimonials.avatarColor }}
                   >
                     {item.name.charAt(0)}
                   </span>
-                  <div className="min-w-0">
-                    <p className="text-[20px] leading-[1.4] font-medium tracking-[-0.2px] text-black">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[16px] leading-[1.3] font-bold text-black lg:text-[22px]">
                       {item.name}
                     </p>
-                    <p className="flex items-center gap-1 text-[18px] leading-[1.3] text-[#b6b6b6]">
+                    <p className="flex items-center gap-1 text-[16px] leading-[1.3] text-[#b6b6b6] lg:text-[16px]">
                       <Image
                         src={content.testimonials.googleIcon}
                         alt=""
@@ -95,14 +49,14 @@ export function Testimonials() {
                     </p>
                   </div>
                 </div>
-                <p className="overflow-hidden text-[18px] leading-[1.3] font-normal text-[#5f5f5f]">
+                <p className="line-clamp-11 min-w-0 flex-1 overflow-hidden text-[14px] leading-[1.3] font-medium break-words text-[#5f5f5f] lg:text-[18px] lg:leading-[1.4]">
                   “{item.quote}”
                 </p>
               </article>
             ))}
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

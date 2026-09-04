@@ -1,27 +1,19 @@
 import type { Metadata } from "next";
-import { Roboto, Roboto_Mono } from "next/font/google";
+import { Nunito } from "next/font/google";
 import localFont from "next/font/local";
 import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { WhatsAppFab } from "@/components/whatsapp-fab";
 import { content } from "@/data/content";
 import "./globals.css";
 
-const roboto = Roboto({
+const nunito = Nunito({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-roboto",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-nunito",
 });
 
-const robotoMono = Roboto_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-roboto-mono",
-});
-
-const editorial = localFont({
-  src: "../../fonts/EditorialToday-Regular.ttf",
-  variable: "--font-editorial",
+const theBold = localFont({
+  src: "../../fonts/THEBOLDFONT-FREEVERSION.otf",
+  variable: "--font-the-bold",
   display: "swap",
 });
 
@@ -32,15 +24,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${roboto.variable} ${robotoMono.variable} ${editorial.variable}`}
-    >
-      <body className={`${roboto.className} min-h-dvh bg-paper font-sans text-ink antialiased`}>
-        <SiteHeader />
+    <html lang="en" className={`${nunito.variable} ${theBold.variable}`}>
+      <body className={`${nunito.className} min-h-dvh bg-paper font-sans text-ink antialiased`}>
         {children}
         <SiteFooter />
-        <WhatsAppFab />
       </body>
     </html>
   );
